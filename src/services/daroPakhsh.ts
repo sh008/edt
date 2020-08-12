@@ -1,20 +1,13 @@
 import * as puppeteer from 'puppeteer';
-import * as captcha from 'async-captcha'
 import * as moment from 'jalali-moment';
 import { sleep } from './utilService';
 import { parse } from 'node-html-parser';
 
 class DaroPakhsh {
 
-    constructor() {
+    constructor() { }
 
-        this.antiCaptcha = new captcha("b7620a21bad27627d4ddef6f62c6c72a", 2, 10);
-
-    }
-
-    antiCaptcha: any;
-
-    public async getReport() {
+    public async getReport(antiCaptcha: any) {
 
         const browser = await puppeteer.launch({
             headless: false,
@@ -23,50 +16,50 @@ class DaroPakhsh {
         try {
 
             const page = await browser.newPage();
-            const pageResponce = await page.goto("http://panel.nokhbegandc.com/");
+            const pageResponce = await page.goto("http://report.dpdcir.com/");
             await sleep(1);
 
-            await page.waitFor('#imgCaptchaLogin');
-            const elementHandler = await page.$("#imgCaptchaLogin");
-            const base64String = await elementHandler.screenshot({ encoding: "base64" });
+            await page.waitFor('#captcha');
+            const elementHandler = await page.$(".normalText");
+            const base64String = await page.screenshot({ encoding: "base64" });
 
-            const captchaCode = await this.antiCaptcha.getResult(base64String);
+            //const captchaCode = await antiCaptcha.getResult(base64String);
 
             await page.$eval('#LoginUserName', el => el.value = '');
             await page.$eval('#LoginPassword', el => el.value = '');
-            await page.$eval('#LoginCaptchaText', (el, code) => el.value = code, captchaCode);
-            const rememberMe = await page.$("#RememberMe");
-            await rememberMe.click();
+            //await page.$eval('input[name="answer"]', (el, code) => el.value = code, captchaCode);
 
-            const loginButton = await page.$("#login-user");
+            const loginButton = await page.$("input[name='submit']");
             await loginButton.click();
 
             await page.waitForNavigation();
             await sleep(10);
 
-            const startDate = moment().format('jYYYY/jMM/1');
-            const endDate = moment().format('jYYYY/jMM/jDD');
-            await page.$eval("#ReportStartDate", (el, date) => el.value = date, startDate);
-            await page.$eval("#ReportEndDate", (el, date) => el.value = date, endDate);
-            await page.evaluate((i) => {
+            await page.goto("http://report.dpdcir.com/main/report_02.php");
+            await sleep(10);
 
-                document.getElementById('SearchBtn').click();
+            await page.$eval("#CompanyCode", (el) => el.value == 264);
 
-            })
+            const startDate = moment().format('jYYYYjMM1');
+            const endDate = moment().format('jYYYYjMMjDD');
+            await page.$eval("#AzTarikh", (el, date) => el.value = date, startDate);
+            await page.$eval("#TaTarikh", (el, date) => el.value = date, endDate);
+            const generateReportBtn = await page.$("input[name='submit_f']");
+            await generateReportBtn.click();
 
-            await sleep(5 * 60);
+            await sleep(1 * 60);
 
-            const html = await page.$eval('#tblReport', e => e.innerHTML);
+            const html = await page.$eval('.subBox', e => e.innerHTML);
             const obj = parse(html)
 
             const allrows = obj.querySelectorAll('tr');
             for (let i = 0; i < allrows.length; i++) {
-    
+
                 const allcol = i ? allrows[i].querySelectorAll('td') : allrows[i].querySelectorAll('th');
                 for (let col of allcol) {
-    
+
                     console.log(col.text);
-    
+
                 }
             }
 

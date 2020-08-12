@@ -1,10 +1,18 @@
 import * as request from 'request';
 import * as moment from 'jalali-moment';
-import daroPakhsh from './daroPakhsh';
+import Nokhbegan from './nokhbegan';
+import DaroPakhsh from './daroPakhsh';
+import * as captcha from 'async-captcha'
 
 class ScrapService {
 
-    public constructor() { }
+    public constructor() {
+
+        this.antiCaptcha = new captcha("b7620a21bad27627d4ddef6f62c6c72a", 2, 10);
+
+    }
+
+    antiCaptcha:any;
 
     private async checkIsHoliday() {
 
@@ -48,7 +56,8 @@ class ScrapService {
             const isHoliday = await this.checkIsHoliday();
             if(!isHoliday){
 
-                await daroPakhsh.test();
+                //await Nokhbegan.getReport(this.antiCaptcha);
+                await DaroPakhsh.getReport(this.antiCaptcha);
                 
             }
 
