@@ -27,6 +27,7 @@ class DaroPakhsh {
                 const pageResponce = yield page.goto("http://report.dpdcir.com/");
                 yield utilService_1.sleep(1);
                 yield page.waitFor('#captcha');
+<<<<<<< HEAD
                 const elementHandler = yield page.$("#captcha");
                 const bounding_box = yield elementHandler.boundingBox();
                 const base64String = yield elementHandler.screenshot({
@@ -42,6 +43,14 @@ class DaroPakhsh {
                 yield page.$eval('input[name="username"]', el => el.value = 'edt424');
                 yield page.$eval('input[name="password"]', el => el.value = 'EDT@424@1398');
                 yield page.$eval('input[name="answer"]', (el, code) => el.value = code, captchaCode);
+=======
+                const elementHandler = yield page.$(".normalText");
+                const base64String = yield page.screenshot({ encoding: "base64" });
+                //const captchaCode = await antiCaptcha.getResult(base64String);
+                yield page.$eval('#LoginUserName', el => el.value = '');
+                yield page.$eval('#LoginPassword', el => el.value = '');
+                //await page.$eval('input[name="answer"]', (el, code) => el.value = code, captchaCode);
+>>>>>>> e13399570e347d62404b7acdbf3b5e6d9b05a945
                 const loginButton = yield page.$("input[name='submit']");
                 yield loginButton.click();
                 yield page.waitForNavigation();

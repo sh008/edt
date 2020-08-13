@@ -11,7 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const request = require("request");
 const moment = require("jalali-moment");
-const daroPakhsh_1 = require("./daroPakhsh");
+const shafa_1 = require("./shafa");
 const captcha = require("async-captcha");
 class ScrapService {
     constructor() {
@@ -46,7 +46,7 @@ class ScrapService {
                 const isHoliday = yield this.checkIsHoliday();
                 if (!isHoliday) {
                     //await Nokhbegan.getReport(this.antiCaptcha);
-                    yield daroPakhsh_1.default.getReport(this.antiCaptcha);
+                    yield shafa_1.default.getReport();
                 }
             }
             catch (e) {
