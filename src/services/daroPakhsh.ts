@@ -11,7 +11,8 @@ class DaroPakhsh {
 
         const browser = await puppeteer.launch({
             headless: false,
-            executablePath: 'C:/Program Files (x86)/Google/Chrome/Application/chrome'
+            executablePath: 'C:/Program Files (x86)/Google/Chrome/Application/chrome',
+            defaultViewport: null
         });
         try {
 
@@ -20,14 +21,24 @@ class DaroPakhsh {
             await sleep(1);
 
             await page.waitFor('#captcha');
-            const elementHandler = await page.$(".normalText");
-            const base64String = await page.screenshot({ encoding: "base64" });
+            const elementHandler = await page.$("#captcha");
+            const bounding_box = await elementHandler.boundingBox();
+            const base64String = await elementHandler.screenshot(
+                { 
+                    encoding: "base64",
+                    clip: {
+                        x: bounding_box.x,
+                        y: bounding_box.y,
+                        width: bounding_box.width,
+                        height: bounding_box.height,
+                      },
+                });
+            
+            const captchaCode = await antiCaptcha.getResult(base64String);
 
-            //const captchaCode = await antiCaptcha.getResult(base64String);
-
-            await page.$eval('#LoginUserName', el => el.value = '');
-            await page.$eval('#LoginPassword', el => el.value = '');
-            //await page.$eval('input[name="answer"]', (el, code) => el.value = code, captchaCode);
+            await page.$eval('input[name="username"]', el => el.value = 'edt424');
+            await page.$eval('input[name="password"]', el => el.value = 'EDT@424@1398');
+            await page.$eval('input[name="answer"]', (el, code) => el.value = code, captchaCode);
 
             const loginButton = await page.$("input[name='submit']");
             await loginButton.click();
@@ -38,12 +49,18 @@ class DaroPakhsh {
             await page.goto("http://report.dpdcir.com/main/report_02.php");
             await sleep(10);
 
-            await page.$eval("#CompanyCode", (el) => el.value == 264);
-
-            const startDate = moment().format('jYYYYjMM1');
+            const startDate = moment().format('jYYYYjMM01');
             const endDate = moment().format('jYYYYjMMjDD');
-            await page.$eval("#AzTarikh", (el, date) => el.value = date, startDate);
-            await page.$eval("#TaTarikh", (el, date) => el.value = date, endDate);
+
+            await page.evaluate((startDate,endDate)=>{
+
+                (document as any).getElementById("CompanyCode").value = 264;
+                (document as any).getElementById("AzTarikh").value = startDate;
+                //(document as any).getElementById("TaTarikh").value = endDate;
+
+            },startDate,endDate);
+            await sleep(1);
+
             const generateReportBtn = await page.$("input[name='submit_f']");
             await generateReportBtn.click();
 
@@ -55,7 +72,7 @@ class DaroPakhsh {
             const allrows = obj.querySelectorAll('tr');
             for (let i = 0; i < allrows.length; i++) {
 
-                const allcol = i ? allrows[i].querySelectorAll('td') : allrows[i].querySelectorAll('th');
+                const allcol = allrows[i].querySelectorAll('td');
                 for (let col of allcol) {
 
                     console.log(col.text);

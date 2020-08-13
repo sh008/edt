@@ -41,7 +41,7 @@ class Nokhbegan {
             const endDate = moment().format('jYYYY/jMM/jDD');
             await page.$eval("#ReportStartDate", (el, date) => el.value = date, startDate);
             await page.$eval("#ReportEndDate", (el, date) => el.value = date, endDate);
-            await page.evaluate((i) => {
+            await page.evaluate(() => {
 
                 document.getElementById('SearchBtn').click();
 
