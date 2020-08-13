@@ -1,9 +1,10 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -28,8 +29,8 @@ class DaroPakhsh {
                 const elementHandler = yield page.$(".normalText");
                 const base64String = yield page.screenshot({ encoding: "base64" });
                 //const captchaCode = await antiCaptcha.getResult(base64String);
-                yield page.$eval('#LoginUserName', el => el.value = 'edt424');
-                yield page.$eval('#LoginPassword', el => el.value = 'EDT@424@1398');
+                yield page.$eval('#LoginUserName', el => el.value = '');
+                yield page.$eval('#LoginPassword', el => el.value = '');
                 //await page.$eval('input[name="answer"]', (el, code) => el.value = code, captchaCode);
                 const loginButton = yield page.$("input[name='submit']");
                 yield loginButton.click();

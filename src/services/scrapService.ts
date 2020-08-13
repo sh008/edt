@@ -2,6 +2,7 @@ import * as request from 'request';
 import * as moment from 'jalali-moment';
 import Nokhbegan from './nokhbegan';
 import DaroPakhsh from './daroPakhsh';
+import Shafa from './shafa';
 import * as captcha from 'async-captcha'
 
 class ScrapService {
@@ -57,7 +58,7 @@ class ScrapService {
             if(!isHoliday){
 
                 //await Nokhbegan.getReport(this.antiCaptcha);
-                await DaroPakhsh.getReport(this.antiCaptcha);
+                await Shafa.getReport();
                 
             }
 
